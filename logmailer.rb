@@ -374,7 +374,7 @@ def load_tails()
 end
 
 # DEBUG: require '<%= node[:logmailer][:full_path]+node[:logmailer][:conf] %>'
-require '/home/ldap/luke.jolly/logmailer/logmailer_conf.rb'
+require '/home/ldap/luke.jolly/git/logmailer/logmailer_conf.rb'
 
 load_tails()
 
