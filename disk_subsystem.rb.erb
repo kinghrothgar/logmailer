@@ -1,0 +1,124 @@
+#!/usr/bin/env ruby
+###
+# RAID Card / Drive Testing
+###
+
+# Error Tracking
+$errors = Array.new
+
+
+<% if node[:kernel][:modules].include? 'megaraid_sas' -%>
+#####
+## Check status of Dell megaraid_sas cards
+#####
+
+    omreport = '/opt/dell/srvadmin/bin/omreport'
+
+    # check each disk
+    %x{#{omreport} storage vdisk}.scan(/[Ss]tatus\s*:\s(.*)/).each do |status|
+        if not status.first.eql? 'Ok'
+            $errors.push("VDisk state: #{status.first}")
+        end
+    end
+    
+    # check storage (raid) controller
+    num_cont = 0
+    %x{#{omreport} storage controller}.scan(/[Ss]tatus\s*:\s(.*)/).each do |status|
+        num_cont += 1
+        if not (status.first.eql? 'Ok' or status.first.eql? 'Non-Critical')
+            $errors.push("Controller state: #{status.first}")
+        end
+    end
+    
+    # check all physical drives
+    (0...num_cont).each do |controller|
+        res = %x{#{omreport} storage pdisk controller=#{controller}}
+        res.scan(/^[Ss]tatus\s*:\s(.*)/).each do |status|
+            if not (status.first.eql? 'Ok' or status.first.eql? 'Non-Critical')
+                $errors.push("PDisk state: #{status.first}")
+            end
+        end
+        res.scan(/^Failure\sPredicted\s*:\s(.*)/).each do |status|
+            if not (status.first.eql? 'No')
+                $errors.push("PDisk Failure Predicted: #{status.first}")
+            end
+        end
+    end
+
+    # check battery
+    #%x{#{omreport} storage battery}.scan(/^[Ss]tatus\s*:\s(.*)/).each do |status|
+    #    if not (status.first.eql? 'Ok' or status.first.eql? 'Non-Critical')
+    #        $errors.push("Battery status: #{status.first}")
+    #    end
+    #end
+
+
+<% elsif node[:kernel][:modules].include? 'aacraid' -%>
+#####
+## Check status of aacraid cards
+#####
+# NOTE: Storman doesn't add itself to the path properly, use full pathing
+
+    controllers = %x{bash -c "LD_PRELOAD=/usr/StorMan/libstdc++.so.5 /usr/StorMan/arcconf getversion"}
+    controllers.scan(/Controller #([0-9]+)/).flatten.each do |controller|
+    
+        storman = %x{bash -c "LD_PRELOAD=/usr/StorMan/libstdc++.so.5 /usr/StorMan/arcconf getconfig #{controller}"}
+        
+        #Check status of stuff
+        items = ["status of logical device", "controller status"]
+        items.each do |item|
+            storman.scan(/^\s*#{item}\s*:?\s?(\S*)$/i) do |status|
+                if not status.first.downcase.eql? 'optimal'
+                    $errors.push("#{item}: #{status}")
+                end
+            end
+        end
+        
+        #Check for failed/degraded devices
+        storman.scan(/Logical devices\/Failed\/Degraded[\s:]*?[0-9]+\/([0-9]+)\/([0-9]+)/) do |status|
+            status.each do |fd|
+                if not fd.eql? '0'
+                    $errors.push("Logical device failed or degraded")
+                end
+            end
+        end
+
+        #Check controller battery
+        #(Turned off per colin's request)
+        #storman.scan(/Controller Battery Information.*?Status[\s:]*([^\n]+)/m) do |status|
+        #    if not (status.first.downcase.eql? 'optimal' or status.first.downcase.eql? 'charging')
+        #        $errors.push("Controller Battery Information: #{status}")
+        #    end
+        #end
+
+    end
+    
+<% else -%>
+# Doesn't seem to be a managed RAID device.  Assume everything is okay (or 'sploded).
+<% end -%>
+
+#These 45 and 47 are vm's, they don't really have ipmi. 32 is being dumb
+<% if not node[:disk_subsystem][:ipmi_exclude].include? node[:hostname] -%>
+
+#IPMI stuff
+%x{ipmitool sdr type Fan}.scan(/[^\n]+/).each do |fan|
+    if not fan.match(/\|\s*ok\s*\|/)
+        $errors.push("Fan status: #{fan}")
+    end
+end
+
+%x{ipmitool sdr type 'Power Supply'}.scan(/[^\n]+/) do |supply|
+    if not supply.match(/\|\s*ok\s*\||\|\s*lnc\s*\||\|\s*lcr\s*\|/) or supply.match(/Redundancy Lost/)
+        $errors.push("Power supply status: #{supply}")
+    end
+end
+
+<% end -%>
+
+
+# we haz errors?
+if not $errors == []
+    $errors.each do |thing| 
+        puts thing
+    end
+end

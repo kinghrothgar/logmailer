@@ -1,0 +1,69 @@
+#! /bin/sh
+# start / stop script for logmailer.rb
+#
+# logmailer.rb - this script starts and stops the logmailer daemon
+#
+# chkconfig: 2345 98 02
+# description:  LogMailer Daemon control script
+
+# Source function library.
+. /etc/init.d/functions
+
+test -x /opt/logmailer/logmailer.rb || exit 0
+
+RETVAL=0
+
+start() {
+        # Check if logmailer.rb is already running
+        if [ ! -f /var/lock/subsys/logmailer.rb ]; then
+            echo -n $"Starting $prog: "
+            daemon /opt/logmailer/logmailer.rb && success || failure
+            RETVAL=$?
+            [ $RETVAL -eq 0 ] && touch /var/lock/subsys/logmailer.rb
+            echo
+        fi
+        return $RETVAL
+}
+
+stop() {
+        echo -n $"Stopping $prog: "
+        killall logmailer.rb # neccessary to kill children
+        RETVAL=$?
+        rm -f /var/lock/subsys/logmailer.rb
+        echo
+        return $RETVAL
+}
+
+restart() {
+        stop
+        start
+}       
+
+reload() {
+        restart
+}       
+
+status_at() {
+        status /opt/logmailer/logmailer.rb
+}
+
+case "$1" in
+start)
+        start
+        ;;
+stop)
+        stop
+        ;;
+reload|restart)
+        restart
+        ;;
+status)
+        status_at
+        ;;
+*)
+        echo $"Usage: $0 {start|stop|restart|status}"
+        exit 1
+esac
+
+exit $?
+exit $RETVAL
