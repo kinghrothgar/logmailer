@@ -51,16 +51,13 @@ CONFIG = [
         :entry_search   => [ /fatal/i, 
                              /gave bad values for recording offline streams/ ], #For skyler
         :reject_global  => [ /HTTPS\snot\srequired\sfor\scowbell\smethod/ ], 
-        :reject_high    => [ /PHP.Notice.*PHP Fatal.error.*fake.*kinesis.save.error.for..Array.*on.line.92/,
-                             /PHP.Notice.*PHP Fatal.error.*fake.*kinesis.missing.parameters.from.request.*on.line.96/,
-                             /PHP.Fatal.error.*Allowed.memory.size.of.*exhausted.*on.line.204/
+        :reject_high    => [ /PHP.Notice.*PHP.Fatal.error.*fake.*kinesis.save.error.for..Array.*on.line.92/m,
+                             /PHP.Notice.*PHP.Fatal.error.*fake.*kinesis.missing.parameters.from.request.*on.line.96/m,
+                             /PHP.Fatal.error.*Allowed.memory.size.of.*exhausted.*on.line.204/m
                            ],
         :entry_tag      => [ ["IGNORE", /PHP.Notice.*Undefined.index.*CachedFileHosts.*StreamEx.php.*160/i], 
                              ["IGNORE", /PHP.Notice.*Undefined.index.*FileID.*StreamEx.php.*159/i],
-                             ["IGNORE", /PHP.Notice.*STREAM.ERROR.*Could.not.find.valid.Stream.Server.*StreamEx.php.*174/i],
-                             ["IGNORE", /PHP.Notice.*PHP Fatal.error.*fake.*kinesis.save.error.for..Array.*on.line.92/],
-                             ["IGNORE", /PHP.Notice.*PHP Fatal.error.*fake.*kinesis.missing.parameters.from.request.*on.line.96/],
-                             ["IGNORE", /PHP.Fatal.error.*Allowed.memory.size.of.*exhausted.*on.line.204/]
+                             ["IGNORE", /PHP.Notice.*STREAM.ERROR.*Could.not.find.valid.Stream.Server.*StreamEx.php.*174/i]
                            ],
         :token_scan     => [ /(notice|error|warning):\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)/i,
                              /API key ID ([0-9]+)/,
