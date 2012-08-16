@@ -21,7 +21,7 @@ require '/home/ldap/luke.jolly/git/logmailer/logmailer_lib.rb'
 #             doesn't match any of these, doesn't match any rejects, but matches one of #
 #             the token_scans it is LOW priority.                                       #
 #                                                                                       #
-# :entry_reject => Array of regex. If an entry matched any of these, it is rejected     #
+# :reject_global => Array of regex. If an entry matched any of these, it is rejected     #
 #             from both HIGH and LOW.                                                   #
 #                                                                                       #
 # :entry_tag => Array of arrays.  Each array's first element is a string which is the   #
@@ -30,7 +30,7 @@ require '/home/ldap/luke.jolly/git/logmailer/logmailer_lib.rb'
 #             there is no match, the entry's tag is it's priority (either "HIGH" or     #
 #             "LOW"). This tag is put in the subject line of emails to help with rules. #
 #                                                                                       #
-# :token_scan => Array of regex. Each entry which passed :entry_search/:entry_reject is #
+# :token_scan => Array of regex. Each entry which passed :entry_search/:reject_global is #
 #             is matched against these tokens. Each needs some sort of matching in them #
 #             (aka, parenthesis). The elements matched will be used to build the hash   #
 #             which determines if this identical (or similar enough) entry has already  #
@@ -50,10 +50,17 @@ CONFIG = [
         :delimiters     => [ /^\[[0-9]{2}\-[A-Za-z]{3}\-[0-9]{4}/ ],
         :entry_search   => [ /fatal/i, 
                              /gave bad values for recording offline streams/ ], #For skyler
-        :entry_reject   => [ /HTTPS\snot\srequired\sfor\scowbell\smethod/ ], 
+        :reject_global  => [ /HTTPS\snot\srequired\sfor\scowbell\smethod/ ], 
+        :reject_high    => [ /PHP.Notice.*PHP Fatal.error.*fake.*kinesis.save.error.for..Array.*on.line.92/,
+                             /PHP.Notice.*PHP Fatal.error.*fake.*kinesis.missing.parameters.from.request.*on.line.96/,
+                             /PHP.Fatal.error.*Allowed.memory.size.of.*exhausted.*on.line.204/
+                           ],
         :entry_tag      => [ ["IGNORE", /PHP.Notice.*Undefined.index.*CachedFileHosts.*StreamEx.php.*160/i], 
                              ["IGNORE", /PHP.Notice.*Undefined.index.*FileID.*StreamEx.php.*159/i],
-                             ["IGNORE", /PHP.Notice.*STREAM.ERROR.*Could.not.find.valid.Stream.Server.*StreamEx.php.*174/i]
+                             ["IGNORE", /PHP.Notice.*STREAM.ERROR.*Could.not.find.valid.Stream.Server.*StreamEx.php.*174/i],
+                             ["IGNORE", /PHP.Notice.*PHP Fatal.error.*fake.*kinesis.save.error.for..Array.*on.line.92/],
+                             ["IGNORE", /PHP.Notice.*PHP Fatal.error.*fake.*kinesis.missing.parameters.from.request.*on.line.96/],
+                             ["IGNORE", /PHP.Fatal.error.*Allowed.memory.size.of.*exhausted.*on.line.204/]
                            ],
         :token_scan     => [ /(notice|error|warning):\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)/i,
                              /API key ID ([0-9]+)/,
@@ -68,8 +75,9 @@ CONFIG = [
         :delimiters     => [ /[^ ]+\s[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}/ ],
         :entry_search   => [ /\[crit\]/, 
                              /\[error\]\s.+?:.*?[0-9]*? connect\(\)/ ],
-        :entry_reject   => [ /unlink\(\)/, 
+        :reject_global  => [ /unlink\(\)/, 
                              /SSL. error.1408F06B.SSL routines.SSL3_GET_RECORD.bad decompression/ ],
+        :reject_high    => [],
         :entry_tag      => [],
         :token_scan     => [ /\[(crit|error)\]\s+([^ ]+)/ ],
         :low_thresh     => 100
@@ -82,7 +90,8 @@ CONFIG = [
     #    :files         => ls_directory("/var/log/php/").grep(/_log$/),
     #    :delimiters     => [ /^\[/ ],
     #    :entry_search   => [ /fatal/i ],
-    #    :entry_reject   => [], 
+    #    :reject_global   => [],
+    #    :reject_high    => [],
     #    :entry_tag      => [],
     #    :token_scan     => [ /error:\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)/i ],
     #    :low_thresh     => 0
@@ -97,7 +106,8 @@ CONFIG = [
     #                            /\[error\] .+?:.*?[0-9]*? connect\(\)/,
     #                            /\[error\] .+?:.*?[0-9]*? open\(\)/ 
     #                        ],
-    #    :entry_reject  => [ /unlink\(\)/ ],
+    #    :reject_global  => [ /unlink\(\)/ ],
+    #    :reject_high    => [],
     #    :entry_tag      => [],
     #    :token_scan     => [ /\[(crit|error)\]\s+([^ ]+)/ ],
     #    :low_thresh     => 0
@@ -111,7 +121,8 @@ CONFIG = [
 #        :files          => ls_directory("logs/").grep(/.log$/),
 #        :delimiters     => [ /[^ ]+\s[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}/ ],
 #        :entry_search   => [ /ERROR/i ],
-#        :entry_reject   => [],
+#        :reject_global   => [],
+#        :reject_high    => [],
 #        :entry_tag      => [],
 #        :token_scan     => [ /ERROR\s+([^ ]+)/ ],
 #        :low_thresh     => 1000
@@ -128,7 +139,8 @@ CONFIG = [
     #                       "/var/log/mongo/mongod3.log" ],
     #    :delimiters   => [ /\n/ ],
     #    :entry_search => [ / query .+(\d+)ms$/i ],
-    #    :entry_reject => [ /writebacklisten/ ],
+    #    :reject_global => [ /writebacklisten/ ],
+    #    :reject_high    => [],
     #    :entry_tag      => [],
     #    :token_scan   => [ /query ([^ ]+)/ ],
     #    :low_thresh     => 0
@@ -141,7 +153,8 @@ CONFIG = [
         :files          => [ "/tmp/manatee_test" ],
         :delimiters     => [ /\n/ ],
         :entry_search   => [ /./ ],
-        :entry_reject   => [],
+        :reject_global  => [],
+        :reject_high    => [],
         :entry_tag      => [],
         :token_scan     => [ /([^ ]+)/ ],
         :low_thresh     => 0
@@ -153,7 +166,8 @@ CONFIG = [
 #        :files          => [ "<%= node[:disk_subsystem][:log] %>" ],
 #        :delimiters     => [ /\n/ ],
 #        :entry_search   => [ /./],
-#        :entry_reject   => [],
+#        :reject_global  => [],
+#        :reject_high    => [],
 #        :entry_tag      => [],
 #        :token_scan     => [ /([^:]+):/ ],
 #        :low_thresh     => 0
@@ -163,7 +177,8 @@ CONFIG = [
         :files          => [ "/var/log/chef/client.log" ],
         :delimiters     => [ /^\[.+\]/ ],
         :entry_search   => [ /FATAL:/ , /Transaction Check Error:/],
-        :entry_reject   => [ /Sleeping\sfor\s[0-9]+\sseconds/i ],
+        :reject_global  => [ /Sleeping\sfor\s[0-9]+\sseconds/i ],
+        :reject_high    => [],
         :entry_tag      => [],
         :token_scan     => [ /FATAL:\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)/ ],
         :low_thresh     => 0

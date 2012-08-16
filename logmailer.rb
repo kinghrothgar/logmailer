@@ -161,10 +161,10 @@ def analyze_lines(lines, summary, config)
 
     # Check what priority it is, if neither, return. If :low_thresh is
     # set to 0, the :low check is skipped as it is turned off
-    if entry_check(entry,config[:entry_search],config[:entry_reject])
+    if entry_check(entry, config[:entry_search], config[:reject_high] + config[:reject_global])
         priority = :high
     elsif config[:low_thresh] != 0 and
-            entry_check(entry,[/.*/],config[:entry_reject])
+            entry_check(entry, [/.*/], config[:reject_global])
         priority = :low
     else
         return
