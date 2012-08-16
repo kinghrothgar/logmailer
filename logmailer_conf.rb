@@ -188,6 +188,3 @@ CONFIG = [
 CONFIG.each do |log_config|
     config_check?(log_config)
 end
-
-# TODO: move this into the main?
-$pids = {}

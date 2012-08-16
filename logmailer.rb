@@ -375,6 +375,7 @@ end
 # DEBUG: require '<%= node[:logmailer][:full_path]+node[:logmailer][:conf] %>'
 require '/home/ldap/luke.jolly/git/logmailer/logmailer_conf.rb'
 
+$pids = {}
 load_tails()
 
 Daemons.daemonize # run in the background
