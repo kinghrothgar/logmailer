@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 require 'rubygems'
 # DEBUG:
-require '/home/ldap/luke.jolly/logmailer/logmailer_lib.rb'
+require '/home/ldap/luke.jolly/git/logmailer/logmailer_lib.rb'
 #require '<%= node[:logmailer][:full_path]+node[:logmailer][:lib] %>'
 
 #########################################################################################
@@ -39,7 +39,7 @@ require '/home/ldap/luke.jolly/logmailer/logmailer_lib.rb'
 #########################################################################################
 
 LOG       = true
-LOGDIR    = "/home/ldap/luke.jolly/logmailer/logs"
+LOGDIR    = "/home/ldap/luke.jolly/git/logmailer/logs"
 
 CONFIG = [
 
