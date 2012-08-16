@@ -57,6 +57,7 @@ CONFIG = [
                            ],
         :entry_tag      => [ ["IGNORE", /PHP.Notice.*Undefined.index.*CachedFileHosts.*StreamEx.php.*160/i], 
                              ["IGNORE", /PHP.Notice.*Undefined.index.*FileID.*StreamEx.php.*159/i],
+                             ["IGNORE", /PHP.Notice.*Undefined.index.*uuid.in.*GSAPI.php.on.line.(135|89)/],
                              ["IGNORE", /PHP.Notice.*STREAM.ERROR.*Could.not.find.valid.Stream.Server.*StreamEx.php.*174/i]
                            ],
         :token_scan     => [ /(notice|error|warning):\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)/i,
