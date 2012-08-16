@@ -108,6 +108,7 @@ end
 # Called by mail_and_garbage 
 def sub_tag_check(entry, tag)
     tag.each do |t|
+        #TODO: WTF is 1 and 0?
         if entry =~ t[1]
             return t[0]
         end
@@ -147,9 +148,9 @@ def collect(summary, source, tokens)
     summary[source].delete(tokens)
     # How many emails have been sent
     summary[:collect][tokens][:e_count] = 1
-    # Totaly error count since last email
+    # Total error count since last email
     summary[:collect][tokens][:t_count] = 0
-    # How many cycles have run since and email has been sent
+    # How many cycles have run since an email has been sent
     summary[:collect][tokens][:cycle] = 0
 end
 
@@ -162,8 +163,7 @@ def analyze_lines(lines, summary, config)
     # set to 0, the :low check is skipped as it is turned off
     if entry_check(entry, config[:entry_search], config[:reject_high] + config[:reject_global])
         priority = :high
-    elsif config[:low_thresh] != 0 and
-            entry_check(entry, [/.*/], config[:reject_global])
+    elsif config[:low_thresh] != 0 and entry_check(entry, [/.*/], config[:reject_global])
         priority = :low
     else
         return
@@ -173,21 +173,22 @@ def analyze_lines(lines, summary, config)
     tokens = token_scan(entry,config[:token_scan])
     return if tokens.nil?
     # Glue them together with colons
-    tokens = tokens[0].join(':')
+    #TODO: I changed tokens to token, because rich hickey says so
+    token = tokens[0].join(':')
 
     # If token exists in collect hash, increase count, else put into
     # correct priority hash
-    if not summary[:collect][tokens].nil?
-        summary[:collect][tokens][:c_count] += 1
+    if not summary[:collect][token].nil?
+        summary[:collect][token][:c_count] += 1
     else
         # Initialize the summary data structure if not already setup
         # Note: ||= doesn't work with boolean
-        summary[priority][tokens] ||= {}
-        summary[priority][tokens][:flag] ||= :new
-        summary[priority][tokens][:entry] = entry
-        summary[priority][tokens][:c_count] ||= 0
+        summary[priority][token] ||= {}
+        summary[priority][token][:flag] ||= :new
+        summary[priority][token][:entry] = entry
+        summary[priority][token][:c_count] ||= 0
         # Incrememnt counter
-        summary[priority][tokens][:c_count] += 1
+        summary[priority][token][:c_count] += 1
     end
 end
 
@@ -264,6 +265,7 @@ def mail_and_garbage(filename, summary, config)
                 # Send email
                 send_and_reset(filename, summary[:low][k])
                 # Move token to collect hash
+                # TODO: Don't use method, just put code here
                 collect(summary, :low, k)
             else
                 puts_log(filename, "INFO: Low entry being deleted" +
@@ -335,6 +337,7 @@ def spawn_proc(file_name, log_config)
         if pid.nil?
             logwatch(file_name, log_config)
         else
+            #TODO: $pids[pid] = {:file_name => file_name, :log_config => log_config}
             $pids[pid] = [file_name, log_config]
         end
     else
@@ -364,10 +367,13 @@ def load_tails()
                     spawn = false
                 end
             end if not $pids.empty?
-            spawn_proc(file_name, log_config) if spawn
-            # Keeps them from spawning all at once so that all the mail_and_garbage
-            # cycles don't run at the same exact time
-            sleep 3 if spawn
+
+            if spawn
+                spawn_proc(file_name, log_config)
+                # Keeps them from spawning all at once so that all the mail_and_garbage
+                # cycles don't run at the same exact time
+                sleep 3
+            end
         end
     end
 end
