@@ -6,8 +6,7 @@ require 'daemons'
 require 'file/tail'
 require 'thread'
 
-RECIPIENT = "Luke <luke.jolly@escapemg.com>, CoolestKidErverer <brian@grooveshark.com>, " +
-            "Nick <nicholas.antonelli@escapemg.com>, Colin <colin.hostert@escapemg.com>"
+RECIPIENT = "Sys Team <noc@escapemg.com>"
 HOSTNAME  = (Socket.gethostname).slice! /([A-Za-z0-9\-_])+/
 SENDER    = "TestLogMailer <testlogmailer@#{HOSTNAME}.in.escapemg.com>"
 SENDMAIL  = "/usr/sbin/sendmail -t"
