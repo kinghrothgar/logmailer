@@ -381,6 +381,7 @@ end
 # DEBUG: require '<%= node[:logmailer][:full_path]+node[:logmailer][:conf] %>'
 require '/home/ldap/luke.jolly/git/logmailer/logmailer_conf.rb'
 
+# TODO: option to Daemonize before load_tails is run the first time
 $pids = {}
 load_tails()
 
