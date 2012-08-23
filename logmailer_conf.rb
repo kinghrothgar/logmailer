@@ -168,17 +168,17 @@ CONFIG = [
     },
 #    <% end -%>
 
-#    {
-#        :name           => "disk_subsystem",
-#        :files          => [ "<%= node[:disk_subsystem][:log] %>" ],
-#        :delimiters     => [ /\n/ ],
-#        :entry_search   => [ /./],
-#        :reject_global  => [],
-#        :reject_high    => [],
-#        :entry_tag      => [],
-#        :token_scan     => [ /([^:]+):/ ],
-#        :low_thresh     => 0
-#    },
+    {
+        :name           => "disk_subsystem",
+        :files          => [ "/var/log/disk_subsystem.log" ],
+        :delimiters     => [ /\n/ ],
+        :entry_search   => [ /./],
+        :reject_global  => [],
+        :reject_high    => [],
+        :entry_tag      => [],
+        :token_scan     => [ /([^:]+):/ ],
+        :low_thresh     => 0
+    },
     {
         :name           => "chef_log",
         :files          => [ "/var/log/chef/client.log" ],
