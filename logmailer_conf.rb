@@ -16,25 +16,31 @@ require '/home/ldap/luke.jolly/git/logmailer/logmailer_lib.rb'
 #             as it comes in. If it finds one of these delimiters it knows the last     #
 #              entry has ended and the next one has started                             #
 #                                                                                       #
-# :entry_search => Array of regex. Looks in each entry found for each of these regex's. #
-#             Only one regex needs to match the entry to HIGH priority. If an entry     #
-#             doesn't match any of these, doesn't match any rejects, but matches one of #
-#             the token_scans it is LOW priority.                                       #
+# :entry_search => Array of regex. If an entry matches any of these regexes, and        #
+#             none of the reject_global or reject_high regexes, it is HIGH priority.    #
+#             If an entry doesn't match any of these, doesn't match reject_global, but  #
+#             still matches one of the token_scans it is LOW priority (doesn't get      #
+#             emailed unless it breaks low_thresh in a minute)                          #
 #                                                                                       #
-# :reject_global => Array of regex. If an entry matched any of these, it is rejected     #
+# :reject_global => Array of regex. If an entry matched any of these, it is rejected    #
 #             from both HIGH and LOW.                                                   #
+#                                                                                       #
+# :reject_high => Array of regex.  If an entry matches any of these, it is rejected     #
+#             from HIGH and treated as LOW priority.                                    #
 #                                                                                       #
 # :entry_tag => Array of arrays.  Each array's first element is a string which is the   #
 #             tag. The second element is a regex. All HIGH and LOW entries are checked. # 
 #             If there's a match, the entry's tag becomes the corresponding tag. If     #
 #             there is no match, the entry's tag is it's priority (either "HIGH" or     #
 #             "LOW"). This tag is put in the subject line of emails to help with rules. #
+#             This does not change what priority the entry is sorted as.                #
 #                                                                                       #
-# :token_scan => Array of regex. Each entry which passed :entry_search/:reject_global is #
-#             is matched against these tokens. Each needs some sort of matching in them #
+# :token_scan => Array of regex. Each entry whether HIGH or LOW priority is matched     #
+#             against these tokens. Each needs some sort of matching in them            #
 #             (aka, parenthesis). The elements matched will be used to build the hash   #
 #             which determines if this identical (or similar enough) entry has already  #
-#             been seen (used for summary mode)                                         #
+#             been seen (used for summary mode). Thus if two entries result in the same #
+#             tokens they are grouped as the same error.                                #
 #                                                                                       #
 #########################################################################################
 
@@ -122,7 +128,7 @@ CONFIG = [
 #        :files          => ls_directory("logs/").grep(/.log$/),
 #        :delimiters     => [ /[^ ]+\s[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}/ ],
 #        :entry_search   => [ /ERROR/i ],
-#        :reject_global   => [],
+#        :reject_global  => [],
 #        :reject_high    => [],
 #        :entry_tag      => [],
 #        :token_scan     => [ /ERROR\s+([^ ]+)/ ],
@@ -131,22 +137,22 @@ CONFIG = [
 #    <% end -%>
 
 
-    #<%if node[:roles].include? "mongo_nodes" -%>
-    #{
-    #    :name         => "mongo_log",
-    #    :files        => [ "/var/log/mongo/mongod.log",
-    #                       "/var/log/mongo/mongod1.log",
-    #                       "/var/log/mongo/mongod2.log",
-    #                       "/var/log/mongo/mongod3.log" ],
-    #    :delimiters   => [ /\n/ ],
-    #    :entry_search => [ / query .+(\d+)ms$/i ],
-    #    :reject_global => [ /writebacklisten/ ],
-    #    :reject_high    => [],
-    #    :entry_tag      => [],
-    #    :token_scan   => [ /query ([^ ]+)/ ],
-    #    :low_thresh     => 0
-    #},
-    #<% end -%>
+#    <%if node[:roles].include? "mongo_nodes" -%>
+    {
+        :name           => "mongo_log",
+        :files          => [ "/var/log/mongo/mongod.log",
+                             "/var/log/mongo/mongod1.log",
+                             "/var/log/mongo/mongod2.log",
+                             "/var/log/mongo/mongod3.log" ],
+        :delimiters     => [ /\n/ ],
+        :entry_search   => [],
+        :reject_global  => [ /writebacklisten/ ],
+        :reject_high    => [],
+        :entry_tag      => [],
+        :token_scan     => [ /query ([^ ]+)/ ],
+        :low_thresh     => 20 
+    },
+#    <% end -%>
 
 #    <%if node[:roles].include? "manatee_test_nodes" -%>
     {
