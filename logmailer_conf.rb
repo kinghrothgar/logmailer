@@ -140,10 +140,7 @@ CONFIG = [
 #    <%if node[:roles].include? "mongo_nodes" -%>
     {
         :name           => "mongo_log",
-        :files          => [ "/var/log/mongo/mongod.log",
-                             "/var/log/mongo/mongod1.log",
-                             "/var/log/mongo/mongod2.log",
-                             "/var/log/mongo/mongod3.log" ],
+        :files          => ls_directory("/var/log/mongo/").grep(/mongod\d*\.log$/),
         :delimiters     => [ /\n/ ],
         :entry_search   => [],
         :reject_global  => [],
