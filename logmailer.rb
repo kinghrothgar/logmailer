@@ -170,7 +170,7 @@ def analyze_lines(lines, summary, config)
     end
 
     # Scan for tokens
-    tokens = token_scan(entry,config[:token_scan])
+    tokens = token_scan(entry, config[:token_scan])
     return if tokens.nil?
     # Glue them together with colons
     #TODO: I changed tokens to token, because rich hickey says so
