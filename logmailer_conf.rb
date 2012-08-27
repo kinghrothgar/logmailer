@@ -91,66 +91,17 @@ CONFIG = [
         :token_scan     => [ /\[(crit|error)\]\s+([^ ]+)/ ],
         :low_thresh     => 100
     },
-#    <% end -%>
-
-    #<%if node[:roles].include? "stream_nodes" -%>
-    #{
-    #    :name           => "php_log",
-    #    :files         => ls_directory("/var/log/php/").grep(/_log$/),
-    #    :delimiters     => [ /^\[/ ],
-    #    :entry_search   => [ /fatal/i ],
-    #    :reject_global   => [],
-    #    :reject_high    => [],
-    #    :entry_tag      => [],
-    #    :token_scan     => [ /error:\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)/i ],
-    #    :low_thresh     => 0
-    #},
-    #    <%if not node[:hostname].eql? 'RHL036' -%>
-    #{
-    #    :name           => "nginx_log",
-    #    :files          => [ "/var/log/nginx/error.log" ],
-    #    :delimiters     => [ /[^ ]+\s[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}/ ],
-    #    :entry_search   =>  [ 
-    #                            /\[crit\]/, 
-    #                            /\[error\] .+?:.*?[0-9]*? connect\(\)/,
-    #                            /\[error\] .+?:.*?[0-9]*? open\(\)/ 
-    #                        ],
-    #    :reject_global  => [ /unlink\(\)/ ],
-    #    :reject_high    => [],
-    #    :entry_tag      => [],
-    #    :token_scan     => [ /\[(crit|error)\]\s+([^ ]+)/ ],
-    #    :low_thresh     => 0
-    #},
-    #    <% end -%>
-    #<% end -%>
-
-#    <%if node[:roles].include? "hadoop" -%>
-#    {
-#        :name           => "hadoop_log",
-#        :files          => ls_directory("logs/").grep(/.log$/),
-#        :delimiters     => [ /[^ ]+\s[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}/ ],
-#        :entry_search   => [ /ERROR/i ],
-#        :reject_global  => [],
-#        :reject_high    => [],
-#        :entry_tag      => [],
-#        :token_scan     => [ /ERROR\s+([^ ]+)/ ],
-#        :low_thresh     => 1000
-#    },
-#    <% end -%>
-
-
-#    <%if node[:roles].include? "mongo_nodes" -%>
-#    {
-#        :name           => "mongo_log",
-#        :files          => ls_directory("/var/log/mongo/").grep(/mongod\d*\.log$/),
-#        :delimiters     => [ /\n/ ],
-#        :entry_search   => [],
-#        :reject_global  => [],
-#        :reject_high    => [],
-#        :entry_tag      => [],
-#        :token_scan     => [ /\[.*\].([^ ]+)\s+([^ ]+)\s+([^ ]+)/ ],
-#        :low_thresh     => 20 
-#    },
+    {
+        :name           => "mongo_log",
+        :files          => ls_directory("/var/log/mongo/").grep(/mongod\d*\.log$/),
+        :delimiters     => [ /\n/ ],
+        :entry_search   => [],
+        :reject_global  => [],
+        :reject_high    => [],
+        :entry_tag      => [],
+        :token_scan     => [ /\[.*\].([^ ]+)\s+([^ ]+)\s+([^ ]+)/ ],
+        :low_thresh     => 20 
+    },
 #    <% end -%>
 
 #    <%if node[:roles].include? "manatee_test_nodes" -%>
