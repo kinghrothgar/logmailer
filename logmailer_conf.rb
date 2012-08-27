@@ -49,94 +49,6 @@ LOGDIR    = "/home/ldap/luke.jolly/git/logmailer/logs"
 
 CONFIG = [
 
-#    <%if node[:roles].include? "front_end_nodes" -%>
-#    {
-#        :name           => "php_log",
-#        :files          => ls_directory("/var/log/php/").grep(/_log$/),
-#        :delimiters     => [ /^\[[0-9]{2}\-[A-Za-z]{3}\-[0-9]{4}/ ],
-#        :entry_search   => [ /fatal/i, 
-#                             /gave bad values for recording offline streams/ ], #For skyler
-#        :reject_global  => [ /HTTPS\snot\srequired\sfor\scowbell\smethod/ ], 
-#        :reject_high    => [ /PHP.Notice.*PHP Fatal.error.*fake.*kinesis.save.error.for..Array/m,
-#                             /PHP.Notice.*PHP Fatal.error.*fake.*kinesis.missing.parameters.from.request/,
-#                             /PHP.Fatal.error.*Allowed.memory.size.of.*exhausted/,
-#                             /PHP.Fatal.error.*Uncaught.exception.*Exception.*with.message.*Unknown.Twitter.error/
-#                           ],
-#        :entry_tag      => [ ["IGNORE", /PHP.Notice.*Undefined.index.*CachedFileHosts.*StreamEx.php/i], 
-#                             ["IGNORE", /PHP.Notice.*Undefined.index.*FileID.*StreamEx.php/i],
-#                             ["IGNORE", /PHP.Notice.*STREAM.ERROR.*Could.not.find.valid.Stream.Server.*StreamEx.php/i],
-#                             ["IGNORE", /PHP.Notice.*PHP Fatal.error.*fake.*kinesis.save.error.for..Array/],
-#                             ["IGNORE", /PHP.Notice.*PHP Fatal.error.*fake.*kinesis.missing.parameters.from.request/]
-#                             #["IGNORE", /PHP.Fatal.error.*Allowed.memory.size.of.*exhausted/]
-#                           ],
-#        :token_scan     => [ /(notice|error|warning):\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)/i,
-#                             /API key ID ([0-9]+)/,
-#                             /(Attacker\!\!)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)/i,
-#                             /(\!\!\!ATTACKER BANNED\!\!\!\!)\s+([^ ]+)\s+([^ ]+)/i,
-#                             /(IP\saddress)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)/ ], #For skyler
-#        :low_thresh     => 100
-#    },
-#    {
-#        :name           => "nginx_log",
-#        :files          => [ "/var/log/nginx/error.log" ],
-#        :delimiters     => [ /[^ ]+\s[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}/ ],
-#        :entry_search   => [ /\[crit\]/, 
-#                             /\[error\]\s.+?:.*?[0-9]*? connect\(\)/ ],
-#        :reject_global  => [ /unlink\(\)/, 
-#                             /SSL. error.1408F06B.SSL routines.SSL3_GET_RECORD.bad decompression/ ],
-#        :reject_high    => [],
-#        :entry_tag      => [],
-#        :token_scan     => [ /\[(crit|error)\]\s+([^ ]+)/ ],
-#        :low_thresh     => 100
-#    },
-#    <% end -%>
-
-    #<%if node[:roles].include? "stream_nodes" -%>
-    #{
-    #    :name           => "php_log",
-    #    :files         => ls_directory("/var/log/php/").grep(/_log$/),
-    #    :delimiters     => [ /^\[/ ],
-    #    :entry_search   => [ /fatal/i ],
-    #    :reject_global   => [],
-    #    :reject_high    => [],
-    #    :entry_tag      => [],
-    #    :token_scan     => [ /error:\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)/i ],
-    #    :low_thresh     => 0
-    #},
-    #    <%if not node[:hostname].eql? 'RHL036' -%>
-    #{
-    #    :name           => "nginx_log",
-    #    :files          => [ "/var/log/nginx/error.log" ],
-    #    :delimiters     => [ /[^ ]+\s[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}/ ],
-    #    :entry_search   =>  [ 
-    #                            /\[crit\]/, 
-    #                            /\[error\] .+?:.*?[0-9]*? connect\(\)/,
-    #                            /\[error\] .+?:.*?[0-9]*? open\(\)/ 
-    #                        ],
-    #    :reject_global  => [ /unlink\(\)/ ],
-    #    :reject_high    => [],
-    #    :entry_tag      => [],
-    #    :token_scan     => [ /\[(crit|error)\]\s+([^ ]+)/ ],
-    #    :low_thresh     => 0
-    #},
-    #    <% end -%>
-    #<% end -%>
-
-#    <%if node[:roles].include? "hadoop" -%>
-#    {
-#        :name           => "hadoop_log",
-#        :files          => ls_directory("logs/").grep(/.log$/),
-#        :delimiters     => [ /[^ ]+\s[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}/ ],
-#        :entry_search   => [ /ERROR/i ],
-#        :reject_global  => [],
-#        :reject_high    => [],
-#        :entry_tag      => [],
-#        :token_scan     => [ /ERROR\s+([^ ]+)/ ],
-#        :low_thresh     => 1000
-#    },
-#    <% end -%>
-
-
 #    <%if node[:roles].include? "mongo_nodes" -%>
     {
         :name           => "mongo_log",
@@ -149,20 +61,6 @@ CONFIG = [
         :token_scan     => [ /\[.*\].([^ ]+)\s+([^ ]+)\s+([^ ]+)/ ],
         :low_thresh     => 20 
     },
-#    <% end -%>
-
-#    <%if node[:roles].include? "manatee_test_nodes" -%>
-#    {
-#        :name           => "manatee_test_nodes",
-#        :files          => [ "/tmp/manatee_test" ],
-#        :delimiters     => [ /\n/ ],
-#        :entry_search   => [ /./ ],
-#        :reject_global  => [],
-#        :reject_high    => [],
-#        :entry_tag      => [],
-#        :token_scan     => [ /([^ ]+)/ ],
-#        :low_thresh     => 0
-#    },
 #    <% end -%>
 
     {
