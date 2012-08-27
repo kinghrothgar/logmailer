@@ -92,13 +92,13 @@ CONFIG = [
         :low_thresh     => 100
     },
     {
-        :name           => "mongo_log",
-        :files          => ls_directory("/var/log/mongo/").grep(/mongod\d*\.log$/),
+        :name           => "mongos_log",
+        :files          => ls_directory("/var/log/mongo/").grep(/mongos\d*\.log$/),
         :delimiters     => [ /\n/ ],
-        :entry_search   => [],
-        :reject_global  => [],
+        :entry_search   => [ /.*/ ],
+        :reject_global  => [ /\[LockPinger\].*pinged.successfully/ ],
         :reject_high    => [],
-        :entry_tag      => [],
+        :entry_tag      => ["MONGOS", /.*/],
         :token_scan     => [ /\[.*\].([^ ]+)\s+([^ ]+)\s+([^ ]+)/ ],
         :low_thresh     => 20 
     },
