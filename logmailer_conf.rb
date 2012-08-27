@@ -60,7 +60,8 @@ CONFIG = [
         :reject_high    => [ /PHP.Notice.*PHP Fatal.error.*fake.*kinesis.save.error.for..Array/m,
                              /PHP.Notice.*PHP Fatal.error.*fake.*kinesis.missing.parameters.from.request/,
                              /PHP.Fatal.error.*Allowed.memory.size.of.*exhausted/,
-                             /PHP.Fatal.error.*Uncaught.exception.*Exception.*with.message.*Unknown.Twitter.error/
+                             /PHP.Fatal.error.*Uncaught.exception.*Exception.*with.message.*Unknown.Twitter.error/,
+                             /PHP.Fatal.error.*PHP Fatal.error.*fake.*Call.to.undefined.method/
                            ],
         :entry_tag      => [ ["IGNORE", /PHP.Notice.*Undefined.index.*CachedFileHosts.*StreamEx.php/i], 
                              ["IGNORE", /PHP.Notice.*Undefined.index.*FileID.*StreamEx.php/i],
