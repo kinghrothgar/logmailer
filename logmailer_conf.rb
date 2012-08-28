@@ -93,14 +93,28 @@ CONFIG = [
     },
     {
         :name           => "mongos_log",
-        :files          => ls_directory("/var/log/mongo/").grep(/mongos\d*\.log$/),
+#        :files          => ls_directory("/var/log/mongo/").grep(/mongos[1]\.log$/),
+#        :files          => ls_directory("/var/log/mongo/").grep(/mongos\d*\.log$/),
+#        :files          => ls_directory("/var/log/mongo/").grep(/.*/),
+        :files          => [ "/var/log/mongo/mongos1.log",
+                             "/var/log/mongo/mongos2.log",
+                             "/var/log/mongo/mongos3.log",
+                             "/var/log/mongo/mongos4.log",
+                             "/var/log/mongo/mongos5.log"
+                           ],
         :delimiters     => [ /\n/ ],
         :entry_search   => [ /.*/ ],
         :reject_global  => [ /\[LockPinger\].*pinged.successfully/ ],
-        :reject_high    => [],
-        :entry_tag      => ["MONGOS", /.*/],
-        :token_scan     => [ /\[.*\].([^ ]+)\s+([^ ]+)\s+([^ ]+)/ ],
-        :low_thresh     => 20 
+        :reject_high    => [ /ns:.*could.not.initialize.cursor.across.all.shards.because.:.stale.config.detected/,
+                             /\].ChunkManager:.time.to.load.chunks.for/,
+                             /\].created.new.distributed.lock.for/,
+                             /warning:.chunk.manager.reload.forced.for.collection/,
+                             /update.will.be.retried.b\/c.sharding.config.info.is.stale/
+                           ],
+        :entry_tag      => [ ["MONGOS", /.*/]
+                           ],
+        :token_scan     => [ /\[.*\].([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)/ ],
+        :low_thresh     => 40 
     },
 #    <% end -%>
 

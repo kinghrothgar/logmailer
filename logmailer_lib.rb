@@ -5,7 +5,10 @@ def ls_directory(path)
         filenames = Dir.open(path).entries
         ret = Array.new
         filenames.each do |filename|
-            ret.push(path + filename)
+            # Add it to array of paths unless it's . or ..
+            if not filename =~ /^\.$|^\..$/
+                ret.push(path + filename)
+            end
         end
         return ret
     rescue
