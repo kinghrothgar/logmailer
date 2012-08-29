@@ -9,7 +9,7 @@ def ls_directory(path)
         ret = Array.new
         filenames.each do |filename|
             # Add it to array of paths unless it's . or ..
-            if not filename =~ /^\.$|^\..$/
+            unless filename =~ /^\.$|^\..$/
                 ret.push(path + filename)
             end
         end
