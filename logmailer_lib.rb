@@ -2,7 +2,10 @@
 
 def ls_directory(path)
     begin
-        filenames = Dir.open(path).entries
+        # Important to close Dir else Daemon errors
+        directory = Dir.open(path)
+        filenames = directory.entries
+        directory.close
         ret = Array.new
         filenames.each do |filename|
             # Add it to array of paths unless it's . or ..
