@@ -2,12 +2,16 @@
 
 def ls_directory(path)
     begin
+        # Important to close Dir else Daemon errors
         directory = Dir.open(path)
         filenames = directory.entries
         directory.close
         ret = Array.new
         filenames.each do |filename|
-            ret.push(path + filename)
+            # Add it to array of paths unless it's . or ..
+            unless filename =~ /^\.$|^\..$/
+                ret.push(path + filename)
+            end
         end
         return ret
     rescue
