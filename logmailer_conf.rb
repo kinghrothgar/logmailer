@@ -88,20 +88,15 @@ CONFIG = [
                              /SSL. error.1408F06B.SSL routines.SSL3_GET_RECORD.bad decompression/ ],
         :reject_high    => [],
         :entry_tag      => [],
-        :token_scan     => [ /\[(crit|error)\]\s+([^ ]+)/ ],
-        :low_thresh     => 100
+        :token_scan     => [ /\[(crit|error)\]\s+\d+#0:\s\*\d+\s+(open\(\))\s+([^ ]+)/,
+                             /\[(crit|error)\]\s+\d+#0:\s\*\d+\s+(upstream sent too big header)/
+                             /\[(crit|error)\]\s+\d+#0:\s\*\d+\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)/
+                           ],
+        :low_thresh     => 20
     },
     {
         :name           => "mongos_log",
-#        :files          => ls_directory("/var/log/mongo/").grep(/mongos[1]\.log$/),
-#        :files          => ls_directory("/var/log/mongo/").grep(/mongos\d*\.log$/),
-#        :files          => ls_directory("/var/log/mongo/").grep(/.*/),
-        :files          => [ "/var/log/mongo/mongos1.log",
-                             "/var/log/mongo/mongos2.log",
-                             "/var/log/mongo/mongos3.log",
-                             "/var/log/mongo/mongos4.log",
-                             "/var/log/mongo/mongos5.log"
-                           ],
+        :files          => ls_directory("/var/log/mongo/").grep(/mongos\d*\.log$/),
         :delimiters     => [ /\n/ ],
         :entry_search   => [ /.*/ ],
         :reject_global  => [ /\[LockPinger\].*pinged.successfully/ ],
@@ -111,8 +106,7 @@ CONFIG = [
                              /warning:.chunk.manager.reload.forced.for.collection/,
                              /update.will.be.retried.b\/c.sharding.config.info.is.stale/
                            ],
-        :entry_tag      => [ ["MONGOS", /.*/]
-                           ],
+        :entry_tag      => [],
         :token_scan     => [ /\[.*\].([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)/ ],
         :low_thresh     => 40 
     },
