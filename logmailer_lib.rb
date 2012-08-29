@@ -2,7 +2,9 @@
 
 def ls_directory(path)
     begin
-        filenames = Dir.open(path).entries
+        directory = Dir.open(path)
+        filenames = directory.entries
+        directory.close
         ret = Array.new
         filenames.each do |filename|
             ret.push(path + filename)
