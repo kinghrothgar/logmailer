@@ -83,13 +83,15 @@ CONFIG = [
         :files          => [ "/var/log/nginx/error.log" ],
         :delimiters     => [ /[^ ]+\s[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}/ ],
         :entry_search   => [ /\[crit\]/, 
-                             /\[error\]\s.+?:.*?[0-9]*? connect\(\)/ ],
+                             /\[error\]\s.+?:.*?[0-9]*? connect\(\)/ 
+                           ],
         :reject_global  => [ /unlink\(\)/, 
-                             /SSL. error.1408F06B.SSL routines.SSL3_GET_RECORD.bad decompression/ ],
+                             /SSL. error.1408F06B.SSL routines.SSL3_GET_RECORD.bad decompression/ 
+                           ],
         :reject_high    => [],
         :entry_tag      => [],
         :token_scan     => [ /\[(crit|error)\]\s+\d+#0:\s\*\d+\s+(open\(\))\s+([^ ]+)/,
-                             /\[(crit|error)\]\s+\d+#0:\s\*\d+\s+(upstream sent too big header)/
+                             /\[(crit|error)\]\s+\d+#0:\s\*\d+\s+(upstream sent too big header)/,
                              /\[(crit|error)\]\s+\d+#0:\s\*\d+\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)/
                            ],
         :low_thresh     => 20
